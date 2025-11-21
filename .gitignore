@@ -1,41 +1,27 @@
-# Prerequisites
-*.d
+# Visual Studio 一時ファイル・キャッシュ
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
+# ビルド生成物
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
 *.exe
-*.out
-*.app
+*.dll
+*.pdb
+*.idb
+*.lib
+*.ipch
+*.iobj
+*.ipdb
 
-# debug information files
-*.dwo
+# データベースやログ
+*.db
+*.db-shm
+*.db-wal
+*.log
+
+# その他不要ファイル
+*.vsidx
+*.opendb
