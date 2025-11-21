@@ -1,3 +1,6 @@
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3d12.lib")
+
 #include <windows.h>
 #include <wrl/client.h>
 #include <dxgi1_6.h>
@@ -22,11 +25,9 @@ UINT frameIndex;
 
 void InitD3D12(HWND hwnd)
 {
-    // DXGIファクトリ作成
     ComPtr<IDXGIFactory4> factory;
     CreateDXGIFactory1(IID_PPV_ARGS(&factory));
 
-    // ハードウェアアダプタ取得
     ComPtr<IDXGIAdapter1> adapter;
     for (UINT i = 0; factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND; i++)
     {
@@ -36,15 +37,15 @@ void InitD3D12(HWND hwnd)
             break;
     }
 
-    // デバイス作成
     D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device));
 
-    // コマンドキュー作成
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    queueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
+    queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    queueDesc.NodeMask = 0;
     device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue));
 
-    // スワップチェーン作成
     DXGI_SWAP_CHAIN_DESC1 swapDesc = {};
     swapDesc.BufferCount = 2;
     swapDesc.Width = 1280;
@@ -59,14 +60,13 @@ void InitD3D12(HWND hwnd)
     tempSwapChain.As(&swapChain);
     frameIndex = swapChain->GetCurrentBackBufferIndex();
 
-    // RTVヒープ作成
     D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
     rtvHeapDesc.NumDescriptors = 2;
     rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap));
     rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-    // レンダーターゲット作成
     for (UINT i = 0; i < 2; i++)
     {
         swapChain->GetBuffer(i, IID_PPV_ARGS(&renderTargets[i]));
@@ -76,48 +76,40 @@ void InitD3D12(HWND hwnd)
         device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators[i]));
     }
 
-    // コマンドリスト作成
     device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators[frameIndex].Get(), nullptr, IID_PPV_ARGS(&commandList));
     commandList->Close();
 
-    // フェンス作成
     device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
     fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
 void ClearScreen()
 {
-    // コマンドリストリセット
     commandAllocators[frameIndex]->Reset();
     commandList->Reset(commandAllocators[frameIndex].Get(), nullptr);
 
-    // バリア: Present → RenderTarget
     D3D12_RESOURCE_BARRIER barrier = {};
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Transition.pResource = renderTargets[frameIndex].Get();
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     commandList->ResourceBarrier(1, &barrier);
 
-    // RTVハンドル取得
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rtvHeap->GetCPUDescriptorHandleForHeapStart();
     rtvHandle.ptr += frameIndex * rtvDescriptorSize;
 
-    // 画面クリア（青色）
     float clearColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
     commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
-    // バリア: RenderTarget → Present
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
     commandList->ResourceBarrier(1, &barrier);
 
-    // コマンドリストクローズ & 実行
     commandList->Close();
     ID3D12CommandList* lists[] = { commandList.Get() };
     commandQueue->ExecuteCommandLists(1, lists);
 
-    // フェンス同期
     fenceValues[frameIndex]++;
     commandQueue->Signal(fence.Get(), fenceValues[frameIndex]);
     if (fence->GetCompletedValue() < fenceValues[frameIndex])
@@ -126,7 +118,6 @@ void ClearScreen()
         WaitForSingleObject(fenceEvent, INFINITE);
     }
 
-    // バッファ切替
     swapChain->Present(1, 0);
     frameIndex = swapChain->GetCurrentBackBufferIndex();
 }
