@@ -129,6 +129,7 @@
     <ClCompile Include="viweclear.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="d3dx12.h" />
     <ClInclude Include="polygon.h" />
   </ItemGroup>
   <ItemGroup>
