@@ -2,10 +2,6 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-void main()
-{
-
-}
 
 int WINAPI WinMain(
     HINSTANCE hInstance,
