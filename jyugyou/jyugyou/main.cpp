@@ -2,6 +2,11 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+void main()
+{
+
+}
+
 int WINAPI WinMain(
     HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -33,8 +38,8 @@ int WINAPI WinMain(
 
     ShowWindow(hwnd, nCmdShow);
 
-    // ★★★ DirectX12 初期化をここで呼ぶ ★★★
-    // InitD3D12(hwnd);
+   
+    
 
     // 3. メッセージループ
     MSG msg{};
@@ -52,7 +57,7 @@ int WINAPI WinMain(
             DispatchMessage(&msg);
         }
 
-     
+        
     }
 
     return 0;
@@ -75,3 +80,5 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
+
