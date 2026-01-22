@@ -128,12 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DX12.cpp" />
+    <ClCompile Include="global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="polygon.cpp" />
     <ClCompile Include="viweclear.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="global.h" />
     <ClInclude Include="polygon.h" />
   </ItemGroup>
   <ItemGroup>
