@@ -129,9 +129,9 @@
   <ItemGroup>
     <ClCompile Include="DX12.cpp" />
     <ClCompile Include="global.cpp" />
+    <ClCompile Include="D3D12lnit.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="polygon.cpp" />
-    <ClCompile Include="viweclear.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx12.h" />

@@ -1,11 +1,23 @@
 ﻿#include <Windows.h>
+#include <vector>            // ★ 必須
+#include <DirectXMath.h>     // ★ 必須
 #include "global.h"
+#include "polygon.h"
 
-// D3D12 初期化 & 描画関数（あなたのコード）
+using namespace DirectX;     // ★ 必須
+
+// D3D12 初期化
 void InitD3D12(HWND hwnd);
-void ClearScreen();
+
+// BeginFrame / EndFrame（ClearScreen はもう使わない）
+void BeginFrame();
+void EndFrame();
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+// polygon インスタンス
+polygon triangle;
+polygon quad;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
@@ -18,7 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     RegisterClass(&wc);
 
-    // 2. ウィンドウ作成（A → W に修正）
+    // 2. ウィンドウ作成
     HWND hwnd = CreateWindowW(
         L"GameWindow",
         L"My Game",
@@ -32,10 +44,42 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
     ShowWindow(hwnd, nCmdShow);
 
-    // ★★★ DirectX12 初期化 ★★★
+    // 3. DirectX12 初期化
     InitD3D12(hwnd);
 
-    // 3. メッセージループ
+    // 4. polygon 初期化
+    {
+        // 白い三角形
+        std::vector<XMFLOAT3> triPos =
+        {
+            {  0.0f,  0.5f, 0.0f },
+            {  0.5f, -0.5f, 0.0f },
+            { -0.5f, -0.5f, 0.0f }
+        };
+        std::vector<XMFLOAT4> triColor =
+        {
+            {1,1,1,1},
+            {1,1,1,1},
+            {1,1,1,1}
+        };
+        triangle.Initialize(g_device, triPos, triColor);
+
+        // 緑の四角形（2つの三角形）
+        std::vector<XMFLOAT3> quadPos =
+        {
+            {-0.3f,  0.3f, 0.0f},
+            { 0.3f,  0.3f, 0.0f},
+            { 0.3f, -0.3f, 0.0f},
+
+            {-0.3f,  0.3f, 0.0f},
+            { 0.3f, -0.3f, 0.0f},
+            {-0.3f, -0.3f, 0.0f}
+        };
+        std::vector<XMFLOAT4> quadColor(6, { 0,1,0,1 });
+        quad.Initialize(g_device, quadPos, quadColor);
+    }
+
+    // 5. メッセージループ
     MSG msg{};
     while (true)
     {
@@ -48,8 +92,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
             DispatchMessage(&msg);
         }
 
-        // ★★★ 毎フレーム描画 ★★★
-        ClearScreen();
+        // ★ フレーム開始（画面クリア）
+        BeginFrame();
+
+        // ★ polygon 描画
+        triangle.Draw(g_commandList);
+        quad.Draw(g_commandList);
+
+        // ★ フレーム終了（実行 & Present）
+        EndFrame();
     }
 
     return 0;

@@ -2,12 +2,18 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <DirectXMath.h>
+#include <vector>
 
 class polygon
 {
 public:
-    polygon();
-    void Initialize(ID3D12Device* device);
+    polygon() = default;
+
+    void Initialize(
+        ID3D12Device* device,
+        const std::vector<DirectX::XMFLOAT3>& positions,
+        const std::vector<DirectX::XMFLOAT4>& colors);
+
     void Draw(ID3D12GraphicsCommandList* cmdList);
 
 private:
@@ -19,4 +25,5 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer;
     D3D12_VERTEX_BUFFER_VIEW vbView{};
+    UINT vertexCount = 0;
 };
