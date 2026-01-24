@@ -1,15 +1,14 @@
 ﻿#include <Windows.h>
-#include <vector>            // ★ 必須
-#include <DirectXMath.h>     // ★ 必須
+#include <vector>            
+#include <DirectXMath.h>     
 #include "global.h"
 #include "polygon.h"
 
-using namespace DirectX;     // ★ 必須
+using namespace DirectX;     
 
 // D3D12 初期化
 void InitD3D12(HWND hwnd);
 
-// BeginFrame / EndFrame（ClearScreen はもう使わない）
 void BeginFrame();
 void EndFrame();
 
@@ -92,14 +91,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
             DispatchMessage(&msg);
         }
 
-        // ★ フレーム開始（画面クリア）
+        // フレーム開始
         BeginFrame();
 
-        // ★ polygon 描画
+        // polygon 描画
         triangle.Draw(g_commandList);
         quad.Draw(g_commandList);
 
-        // ★ フレーム終了（実行 & Present）
+        // フレーム終了
         EndFrame();
     }
 

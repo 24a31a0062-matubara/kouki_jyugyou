@@ -1,4 +1,3 @@
-// Shader.hlsl
 
 // 頂点シェーダー入力
 struct VSInput
