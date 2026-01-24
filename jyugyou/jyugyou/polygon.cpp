@@ -22,7 +22,7 @@ void polygon::Initialize(
 
     UINT bufferSize = sizeof(Vertex) * vertexCount;
 
-    // ヒープ設定（UPLOAD）
+    // ヒープ設定
     D3D12_HEAP_PROPERTIES heapProp{};
     heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
 

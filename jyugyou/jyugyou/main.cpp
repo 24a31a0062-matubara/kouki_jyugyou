@@ -46,7 +46,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
     // 3. DirectX12 初期化
     InitD3D12(hwnd);
 
-    // 4. polygon 初期化
+    // 4.polygon 初期化
     {
         // 白い三角形
         std::vector<XMFLOAT3> triPos =
@@ -63,7 +63,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
         };
         triangle.Initialize(g_device, triPos, triColor);
 
-        // 緑の四角形（2つの三角形）
+        // 緑の四角形
         std::vector<XMFLOAT3> quadPos =
         {
             {-0.3f,  0.3f, 0.0f},

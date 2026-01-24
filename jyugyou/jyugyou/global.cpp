@@ -1,4 +1,3 @@
-// global.cpp
 #include "global.h"
 
 int g_windowWidth = 1280;

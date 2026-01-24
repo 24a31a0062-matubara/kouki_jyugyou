@@ -61,7 +61,7 @@ void InitD3D12(HWND hwnd)
         &tempSwapChain
     );
 
-    // ★ IDXGISwapChain3 に変換（As をやめて QueryInterface を使う）
+    // IDXGISwapChain3 に変換
     ComPtr<IDXGISwapChain3> swapChain3;
     tempSwapChain->QueryInterface(IID_PPV_ARGS(&swapChain3));
     g_swapChain = swapChain3.Get();
@@ -101,10 +101,7 @@ void InitD3D12(HWND hwnd)
     g_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
     g_fenceValue = 0;
 
-    // ================================
-    // ★ PSO（パイプラインステート）
-    // ================================
-
+    
     // シェーダ読み込み
     ComPtr<ID3DBlob> vsBlob;
     ComPtr<ID3DBlob> psBlob;
@@ -195,7 +192,7 @@ void BeginFrame()
     g_commandList->SetPipelineState(g_pipelineState.Get());
     g_commandList->SetGraphicsRootSignature(g_rootSignature.Get());
 
-    // Present → RenderTarget
+    // Present
     D3D12_RESOURCE_BARRIER barrier{};
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Transition.pResource = g_renderTargets[g_frameIndex];
@@ -230,7 +227,7 @@ void BeginFrame()
 
 void EndFrame()
 {
-    // RenderTarget → Present
+    // RenderTarget
     D3D12_RESOURCE_BARRIER barrier{};
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Transition.pResource = g_renderTargets[g_frameIndex];
